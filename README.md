@@ -7,6 +7,9 @@
 
 ### ✨ EmoSphere-TTS: Controllable Emotional TTS using Spherical Emotion Vector
 
+implementations of the basic paradigm intorduced by [EmoSphere-TTS: Emotional Style and Intensity Modeling via Spherical
+Emotion Vector for Controllable Emotional Text-to-Speech](https://github.com/Choddeok/EmoSphere-TTS). [paper](https://arxiv.org/pdf/2406.07803)
+
 <p align="center">
     <img src="img/emosphere.png" width="80%">
 </p>
@@ -15,8 +18,8 @@
 This project implements a controllable emotional text-to-speech (TTS) system, based on EmoSphere-TTS. Unlike conventional methods that rely on discrete emotion labels or reference audio, this approach models emotional style and intensity using a spherical emotion vector derived from arousal, valence, and dominance (AVD) dimensions.
 
 AVD pseudo-labels are extracted automatically via a pre-trained SER model, then transformed from Cartesian to spherical coordinates. In this space:
-	•	Emotion style is determined by angular direction (θ, φ)
-	•	Emotion intensity is represented by radial distance (r) from the neutral center
+ -	Emotion style is determined by angular direction (θ, φ)
+ -	Emotion intensity is represented by radial distance (r) from the neutral center
 
 The spherical emotion vector is encoded and conditioned into a FastSpeech2-based TTS model. Emotion and speaker embeddings are fused to generate expressive and high-quality speech. To further enhance realism and emotional fidelity, a dual conditional adversarial discriminator is employed, conditioned on both speaker and emotion representations.
 
