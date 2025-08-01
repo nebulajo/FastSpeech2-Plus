@@ -49,7 +49,11 @@ We recommend reading the original paper and referring to FastSpeech2 for baselin
 Please install the python dependencies given in `requirements.txt`.
 
 ```bash
+# train.py, synthesize.py
 pip3 install -r requirements.txt
+
+# polar_coordinate.py
+pip install -r requirements_polar.txt
 ```
 
 ## Model Training
