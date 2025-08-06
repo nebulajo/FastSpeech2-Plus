@@ -5,7 +5,7 @@
 </p>
 
 
-### ✨ EmoSphere-TTS: Controllable Emotional TTS using Spherical Emotion Vector
+## ✨ EmoSphere-TTS: Controllable Emotional TTS using Spherical Emotion Vector
 
 implementations of the basic paradigm intorduced by [EmoSphere-TTS: Emotional Style and Intensity Modeling via Spherical
 Emotion Vector for Controllable Emotional Text-to-Speech](https://github.com/Choddeok/EmoSphere-TTS). [paper](https://arxiv.org/pdf/2406.07803)
@@ -40,11 +40,8 @@ We recommend reading the original paper and referring to FastSpeech2 for baselin
 #### TODO
 - Dual Conditional Adversarial Discriminator
 
-⸻
 
-
-
-# Dependencies
+## Dependencies
 
 Please install the python dependencies given in `requirements.txt`.
 
@@ -56,13 +53,13 @@ pip3 install -r requirements.txt
 pip install -r requirements_polar.txt
 ```
 
-# Model Training
+## Training
 
 ```bash
 python3 train.py -p config/ESD/preprocess.yaml -m config/ESD/model.yaml -t config/ESD/train.yaml
 ```
 
-# Inference
+## Inference
 
 ```bash
 python3 synthesize.py --text "YOUR_DESIRED_TEXT" --speaker_id SPEAKER_ID --emotion_id EMOTION_ID --arousal AROUSAL --valence VALENCE --restore_step STEP --mode single -p config/ESD/preprocess.yaml -m config/ESD/model.yaml -t config/ESD/train.yaml
@@ -83,7 +80,7 @@ python3 synthesize.py --use_sphere --text "I'm a boy" --speaker_id 0011 --emotio
   --use_sphere --emo_style V --emo_intensity 0.9
 ```
 
-# TensorBoard
+## TensorBoard
 
 Use
 
