@@ -10,7 +10,7 @@ import numpy as np
 from torch.utils.data import DataLoader
 from g2p_en import G2p
 
-from utils.model import get_model, get_vocoder
+from utils.model import get_model, get_emosphere, get_vocoder
 from utils.tools import to_device, synth_samples
 from dataset import TextDataset
 from text import text_to_sequence
@@ -87,6 +87,7 @@ def synthesize(model, step, configs, vocoder, batchs, control_values, tag):
     preprocess_config, model_config, train_config = configs
     pitch_control, energy_control, duration_control = control_values
 
+
     for batch in batchs:
         batch = to_device(batch, device)
         with torch.no_grad():
@@ -97,6 +98,52 @@ def synthesize(model, step, configs, vocoder, batchs, control_values, tag):
                 e_control=energy_control,
                 d_control=duration_control
             )
+            
+            synth_samples(
+                batch,
+                output,
+                vocoder,
+                model_config,
+                preprocess_config,
+                train_config["path"]["result_path"],
+                tag,
+            )
+            
+def synthesize_emosphere(model, step, configs, vocoder, batchs, control_values, tag, emo_style, emo_intensity=0.5):
+    preprocess_config, model_config, train_config = configs
+    pitch_control, energy_control, duration_control = control_values
+        
+    for batch in batchs:
+        batch = to_device(batch, device)
+    
+        #    Sphere
+        n_batch = len(batch[0])
+        polar_coordinates = torch.empty(n_batch, 1, 3, device=device, dtype=torch.float32)
+        polar_coordinates[:, 0:1] = emo_intensity # TODO intensity 
+            
+        if emo_style == "I":
+            new_tensor = torch.tensor([np.pi / 4, np.pi / 4])
+            polar_coordinates[0][0][1:] = new_tensor
+        elif emo_style == "III":
+            new_tensor = torch.tensor([np.pi / 4, -3 * np.pi / 4])
+            polar_coordinates[0][0][1:] = new_tensor
+        elif emo_style == "V":
+            new_tensor = torch.tensor([3 * np.pi / 4, np.pi / 4])
+            polar_coordinates[0][0][1:] = new_tensor
+        elif emo_style == "VII":
+            new_tensor = torch.tensor([3 * np.pi / 4, -3 * np.pi / 4])
+            polar_coordinates[0][0][1:] = new_tensor
+
+        with torch.no_grad():
+            # Forward
+            output = model(
+                *(batch[2:]),
+                polar_coordinates=polar_coordinates,
+                p_control=pitch_control,
+                e_control=energy_control,
+                d_control=duration_control,
+            )
+            
             synth_samples(
                 batch,
                 output,
@@ -186,6 +233,24 @@ if __name__ == "__main__":
         default=1.0,
         help="control the speed of the whole utterance, larger value for slower speaking rate",
     )
+    parser.add_argument(
+        "--use_sphere",
+        action='store_true',
+    )
+    parser.add_argument(
+        "--emo_intensity",
+        type=float,
+        default=1.0,
+        help="control the intensity of the emotion, larger value for stronger emotion",
+    )
+    parser.add_argument(
+            "--emo_style",
+            type=str,
+            default="I",
+            choices=["I", "III", "V", "VII"],
+            help="emotion style, I, III, V, VII",
+        )
+
     args = parser.parse_args()
 
     # Check source texts
@@ -203,7 +268,10 @@ if __name__ == "__main__":
     configs = (preprocess_config, model_config, train_config)
 
     # Get model
-    model = get_model(args, configs, device, train=False)
+    if args.use_sphere:
+        model = get_emosphere(args, configs, device, train=False)
+    else:
+        model = get_model(args, configs, device, train=False)
 
     # Load vocoder
     vocoder = get_vocoder(model_config, device)
@@ -242,5 +310,11 @@ if __name__ == "__main__":
         tag = f"{args.speaker_id}_{args.emotion_id}"
 
     control_values = args.pitch_control, args.energy_control, args.duration_control
-
-    synthesize(model, args.restore_step, configs, vocoder, batchs, control_values, tag)
+    
+    if args.use_sphere:    
+        emo_style = args.emo_style
+        emo_intensity = args.emo_intensity
+        tag = f"_{emo_style}_{emo_intensity}"
+        synthesize_emosphere(model, args.restore_step, configs, vocoder, batchs, control_values, tag, emo_style, emo_intensity)
+    else:
+        synthesize(model, args.restore_step, configs, vocoder, batchs, control_values, tag)
