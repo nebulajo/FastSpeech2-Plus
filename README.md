@@ -56,7 +56,7 @@ pip3 install -r requirements.txt
 pip install -r requirements_polar.txt
 ```
 
-## Model Training
+# Model Training
 
 ```bash
 python3 train.py -p config/ESD/preprocess.yaml -m config/ESD/model.yaml -t config/ESD/train.yaml
@@ -72,7 +72,15 @@ python3 synthesize.py --text "YOUR_DESIRED_TEXT" --speaker_id SPEAKER_ID --emoti
 Batch inference is also supported, try
 
 ```bash
-python3 synthesize.py --source preprocessed_data/ESD/val.txt --restore_step STEP --mode batch -p config/ESD/preprocess.yaml -m config/ESD/model.yaml -t config/ESD/train.yaml
+# Single
+python3 synthesize.py --use_sphere --text "I'm a boy" --speaker_id 0011 --emotion_id 'Sad' \
+ --arousal 'mid' --valence "neutral" --restore_step 900000 --mode single \
+ -p config/ESD/preprocess.yaml -m config/ESD/model.yaml -t config/ESD/train_sphere.yaml 
+
+# Batch
+ python3 synthesize.py --source preprocessed_data/ESD/val_surprise.txt --restore_step 900000 --mode batch \
+  -p config/ESD/preprocess.yaml -m config/ESD/model.yaml -t config/ESD/train_sphere.yaml \
+  --use_sphere --emo_style V --emo_intensity 0.9
 ```
 
 # TensorBoard
