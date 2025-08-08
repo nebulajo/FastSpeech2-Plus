@@ -53,6 +53,31 @@ pip3 install -r requirements.txt
 pip install -r requirements_polar.txt
 ```
 
+## Preprocess
+
+IMECAP
+
+### Train MFA from scratch
+
+To train MFA, grapheme-phoneme dictionary that covers all the words in the dataset is required. Following command will generate such dictionary in lexicon/.
+```bash
+python3 prepare_data.py --extract_lexicon -p config/{dataset}/preprocess.yaml
+```
+
+After that, train MFA
+
+```bash
+mfa train  ./raw_data/{dataset}/sessions lexicon/iemocap-lexicon.txt montreal-forced-aligner/iemocap-aligner/acoustic_model.zip --output_directory preprocessed_data/{dataset}/TextGrid -j 8 --clean --include_speaker_directory
+
+```
+
+Finally, run the preprocessing script. It will extract and save duration, energy, mel-spectrogram, and pitch in preprocessed_data/{dataset}/ from each audio.
+
+```bash
+python3 preprocess.py config/{dataset}/preprocess.yaml
+```
+
+
 ## Training
 
 ```bash
