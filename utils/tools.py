@@ -8,6 +8,10 @@ import matplotlib
 from scipy.io import wavfile
 from matplotlib import pyplot as plt
 
+import torchaudio
+
+# from speech_resynth.src.bigvgan.data import mel_spectrogram
+
 
 matplotlib.use("Agg")
 
@@ -222,6 +226,47 @@ def log(
         )
 
 
+def log_adv(
+    logger,
+    step=None,
+    losses_gen=None,
+    losses_disc=None,
+    fig=None,
+    audio=None,
+    sampling_rate=22050,
+    tag="",
+):
+    if losses_gen is not None:
+        # Gen Loss
+        logger.add_scalar("Gen Loss/total_loss", losses_gen[0], step)
+        logger.add_scalar("Gen Loss/mel_loss", losses_gen[1], step)
+        logger.add_scalar("Gen Loss/mel_postnet_loss", losses_gen[2], step)
+        logger.add_scalar("Gen Loss/pitch_loss", losses_gen[3], step)
+        logger.add_scalar("Gen Loss/energy_loss", losses_gen[4], step)
+        logger.add_scalar("Gen Loss/duration_loss", losses_gen[5], step)
+        logger.add_scalar("Disc Loss/fake_emotion_loss", losses_gen[6], step)
+        logger.add_scalar("Disc Loss/fake_speaker_loss", losses_gen[7], step)
+
+        # Disc Loss
+        logger.add_scalar("Disc Loss/total_loss", losses_disc[0], step)
+        logger.add_scalar("Disc Loss/real_loss(emotion+speaker)", losses_disc[1], step)
+        logger.add_scalar("Disc Loss/fake_loss(emotion+speaker)", losses_disc[2], step)
+        logger.add_scalar("Disc Loss/real_loss(emotion)", losses_disc[3], step)
+        logger.add_scalar("Disc Loss/real_loss(speaker)", losses_disc[4], step)
+        logger.add_scalar("Disc Loss/fake_loss(emotion)", losses_disc[5], step)
+        logger.add_scalar("Disc Loss/fake_loss(speaker)", losses_disc[6], step)
+
+    if fig is not None:
+        logger.add_figure(tag, fig)
+
+    if audio is not None:
+        logger.add_audio(
+            tag,
+            audio / max(abs(audio)),
+            sample_rate=sampling_rate,
+        )
+
+
 def get_mask_from_lengths(lengths, max_len=None):
     batch_size = lengths.shape[0]
     if max_len is None:
@@ -341,19 +386,34 @@ def synth_samples(
 
     mel_predictions = predictions[1].transpose(1, 2)
     lengths = predictions[9] * preprocess_config["preprocessing"]["stft"]["hop_length"]
+
     wav_predictions = vocoder_infer(
         mel_predictions, vocoder, model_config, preprocess_config, lengths=lengths
     )
 
     sampling_rate = preprocess_config["preprocessing"]["audio"]["sampling_rate"]
-    for wav, basename in zip(wav_predictions, basenames):
-        wavfile.write(
-            os.path.join(
-                path, "{}{}.wav".format(basename, f"_{tag}" if tag is not None else "")
-            ),
-            sampling_rate,
-            wav,
-        )
+    if isinstance(wav_predictions, torch.Tensor):
+        for i in range(wav_predictions.size(0)):  # 배치 크기 만큼 반복
+            # i번째 오디오 추출
+            wav = wav_predictions[i].cpu().numpy().astype(np.int16)*preprocess_config["preprocessing"]["audio"]["max_wav_value"]  # shape: [1, 45056]
+            
+            # 파일 이름 설정
+            filename = os.path.join(
+                    path, "{}{}.wav".format(basename, f"_{tag}" if tag is not None else "")
+                ),
+            # breakpoint()
+            # 저장
+            torchaudio.save(filename[0], wav.unsqueeze(0), sampling_rate)
+            print(f"Saved {filename[0]}")
+    else:
+        for wav, basename in zip(wav_predictions, basenames):
+            wavfile.write(
+                os.path.join(
+                    path, "{}{}.wav".format(basename, f"_{tag}" if tag is not None else "")
+                ),
+                sampling_rate,
+                wav,
+            )
 
 
 def plot_mel(data, stats, titles):

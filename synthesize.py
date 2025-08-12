@@ -10,6 +10,7 @@ import numpy as np
 from torch.utils.data import DataLoader
 from g2p_en import G2p
 
+
 from utils.model import get_model, get_emosphere, get_vocoder
 from utils.tools import to_device, synth_samples
 from dataset import TextDataset
