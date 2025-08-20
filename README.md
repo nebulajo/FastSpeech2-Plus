@@ -15,7 +15,7 @@
 Emotion Vector for Controllable Emotional Text-to-Speech](https://github.com/Choddeok/EmoSphere-TTS). [paper](https://arxiv.org/pdf/2406.07803).
 
 <p align="center">
-    <img src="img/emotion_label.png" width="80%">
+    <img src="img/emosphere.png" width="80%">
 </p>
 
 
