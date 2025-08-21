@@ -1,7 +1,7 @@
 path:
-  ckpt_path: "./output_test/ckpt/ESD"
-  log_path: "./output_test/log/ESD"
-  result_path: "./output_test/result/ESD"
+  ckpt_path: "./output/emotion_label_16000/ckpt/ESD"
+  log_path: "./output/emotion_label_16000/log/ESD"
+  result_path: "./output/emotion_label_16000/result/ESD"
 optimizer:
   batch_size: 16
   betas: [0.9, 0.98]

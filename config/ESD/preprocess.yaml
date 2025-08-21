@@ -2,13 +2,12 @@ dataset: "ESD"
 
 path:
   # corpus_path: "/path/to/IEMOCAP_full_release"
-  # sub_dir_name: "sessions"
-  sub_dir_name: "ESD"
+  sub_dir_name: "ESD_16000"
   lexicon_path: "lexicon/mfa_dict.txt"
   # fixed_text_path: "./preparation/iemocap_fixed.txt"
-  raw_path: "./raw_data/ESD"
+  raw_path: "./raw_data/ESD_16000"
   # preprocessed_path: "./preprocessed_data/IEMOCAP"
-  preprocessed_path: "./preprocessed_data_test/ESD"
+  preprocessed_path: "./preprocessed_data/ESD_16000"
 
 preprocessing:
   val_size: 512
@@ -16,7 +15,7 @@ preprocessing:
     text_cleaners: ["english_cleaners"]
     language: "en"
   audio:
-    sampling_rate: 22050
+    sampling_rate: 16000
     max_wav_value: 32768.0
   stft:
     filter_length: 1024

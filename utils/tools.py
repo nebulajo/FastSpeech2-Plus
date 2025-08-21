@@ -375,6 +375,7 @@ def synth_samples(
             stats,
             ["Synthetized Spectrogram"],
         )
+        os.makedirs(path, exist_ok=True)
         plt.savefig(
             os.path.join(
                 path, "{}{}.png".format(basename, f"_{tag}" if tag is not None else "")
@@ -392,28 +393,15 @@ def synth_samples(
     )
 
     sampling_rate = preprocess_config["preprocessing"]["audio"]["sampling_rate"]
-    if isinstance(wav_predictions, torch.Tensor):
-        for i in range(wav_predictions.size(0)):  # 배치 크기 만큼 반복
-            # i번째 오디오 추출
-            wav = wav_predictions[i].cpu().numpy().astype(np.int16)*preprocess_config["preprocessing"]["audio"]["max_wav_value"]  # shape: [1, 45056]
-            
-            # 파일 이름 설정
-            filename = os.path.join(
-                    path, "{}{}.wav".format(basename, f"_{tag}" if tag is not None else "")
-                ),
-            # breakpoint()
-            # 저장
-            torchaudio.save(filename[0], wav.unsqueeze(0), sampling_rate)
-            print(f"Saved {filename[0]}")
-    else:
-        for wav, basename in zip(wav_predictions, basenames):
-            wavfile.write(
-                os.path.join(
-                    path, "{}{}.wav".format(basename, f"_{tag}" if tag is not None else "")
-                ),
-                sampling_rate,
-                wav,
-            )
+
+    for wav, basename in zip(wav_predictions, basenames):
+        wavfile.write(
+            os.path.join(
+                path, "{}{}.wav".format(basename, f"_{tag}" if tag is not None else "")
+            ),
+            sampling_rate,
+            wav,
+        )
 
 
 def plot_mel(data, stats, titles):

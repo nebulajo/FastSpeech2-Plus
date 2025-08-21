@@ -35,5 +35,8 @@ multi_emotion: True
 max_seq_len: 2000
 
 vocoder:
-  model: "HiFi-GAN" # support 'HiFi-GAN', 'MelGAN'
-  speaker: "universal" # support  'LJSpeech', 'universal'
+  # model: "HiFi-GAN" # support 'HiFi-GAN', 'MelGAN'
+  # speaker: "universal" # support  'LJSpeech', 'universal'
+  
+  # model: "BigVGAN"
+  model: "HIFIGAN_speechbrain"
