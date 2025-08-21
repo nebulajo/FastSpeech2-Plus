@@ -22,7 +22,7 @@ python3 synthesize.py --text "I'm a boy" \
 #   --text "I'm a boy" \
 #   --emotion_id 'Sad' \
 #   --speaker_id 0011  \ 
-#   --restore_step 900000 \ # checkpoint
+#   --restore_step 900000 \
 #   --mode single \
 #   -p config/ESD/preprocess.yaml -m config/ESD/model.yaml -t config/ESD/train_sphere_adv.yaml # config
 
