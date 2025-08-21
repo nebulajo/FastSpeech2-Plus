@@ -18,7 +18,7 @@ def get_model(args, configs, device, train=False):
             train_config["path"]["ckpt_path"],
             "{}.pth.tar".format(args.restore_step),
         )
-        ckpt = torch.load(ckpt_path)
+        ckpt = torch.load(ckpt_path, weights_only=False, map_location="cpu")
         model.load_state_dict(ckpt["model"])
 
     if train:
@@ -53,7 +53,7 @@ def get_discriminator(args, configs, device, train=False):
             train_config["path"]["ckpt_path"],
             "{}.pth.tar".format(args.restore_step),
         )
-        ckpt = torch.load(ckpt_path)
+        ckpt = torch.load(ckpt_path, weights_only=False)
         mel_disc.load_state_dict(ckpt["model_disc"])
 
     if train:
@@ -81,7 +81,7 @@ def get_emosphere_adv(args, configs, device, train=False, use_discriminator=Fals
             train_config["path"]["ckpt_path"],
             "{}.pth.tar".format(args.restore_step),
         )
-        ckpt = torch.load(ckpt_path)
+        ckpt = torch.load(ckpt_path, weights_only=False)
         model.load_state_dict(ckpt["model"])
 
     if train:
@@ -151,9 +151,9 @@ def get_vocoder(config, device):
         config = hifigan.AttrDict(config)
         vocoder = hifigan.Generator(config)
         if speaker == "LJSpeech":
-            ckpt = torch.load("hifigan/generator_LJSpeech.pth.tar")
+            ckpt = torch.load("hifigan/generator_LJSpeech.pth.tar", weights_only=False)
         elif speaker == "universal":
-            ckpt = torch.load("hifigan/generator_universal.pth.tar")
+            ckpt = torch.load("hifigan/generator_universal.pth.tar", weights_only=False)
         vocoder.load_state_dict(ckpt["generator"])
         vocoder.eval()
         vocoder.remove_weight_norm()
