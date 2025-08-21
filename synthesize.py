@@ -194,13 +194,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--arousal",
         type=str,
-        default="3",
+        default="mid",
         help="arousal value for multi-emotion synthesis, for single-sentence mode only",
     )
     parser.add_argument(
         "--valence",
         type=str,
-        default="3",
+        default="neutral",
         help="valence value for multi-emotion synthesis, for single-sentence mode only",
     )
     parser.add_argument(
