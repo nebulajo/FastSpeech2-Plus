@@ -63,7 +63,7 @@ class EmoSphere(nn.Module):
                 n_emotion,
                 model_config["transformer"]["encoder_hidden"],
             )
-        # Sphere
+        # Sphere - 전체 구 지원
         self.hidden_size = model_config["transformer"]["encoder_hidden"]
 
         self.use_spk_lookup = use_spk_lookup
@@ -81,14 +81,15 @@ class EmoSphere(nn.Module):
             self.hidden_size // 4, self.hidden_size // 4, bias=True
         )
 
+        # 전체 구 범위로 확장
         self.azimuth_bins = nn.Parameter(
-            torch.linspace(-np.pi / 2, np.pi, 4), requires_grad=False
+            torch.linspace(-np.pi, np.pi, 8), requires_grad=False  # -180° ~ 180° (전체 360도)
         )
-        self.azimuth_emb = Embedding(4, self.hidden_size // 8)
+        self.azimuth_emb = Embedding(8, self.hidden_size // 8)  # 4 -> 8개로 증가
         self.elevation_bins = nn.Parameter(
-            torch.linspace(np.pi / 2, np.pi, 2), requires_grad=False
+            torch.linspace(0, np.pi, 4), requires_grad=False  # 0° ~ 180° (전체 구)
         )
-        self.elevation_emb = Embedding(2, self.hidden_size // 8)
+        self.elevation_emb = Embedding(4, self.hidden_size // 8)  # 2 -> 4개로 증가
 
         self.emo_proj = nn.Linear(
             self.hidden_size // 4, self.hidden_size // 4, bias=True
